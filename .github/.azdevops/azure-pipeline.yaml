@@ -1,0 +1,120 @@
+name: $(build.sourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  branches:
+    include: 
+    - master
+    - staging
+    - dev
+  paths:
+    exclude: 
+    # Exclude README.md from triggering content deployments
+    # Exclude the app folder from triggering content deployments, since it isn't included in the Dockerfile anyway
+    - README.md
+    - app/* 
+
+# no PR builds
+pr: none
+
+resources:
+- repo: self
+
+variables:
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildNumber)'
+  sourceVersion: '$(Build.SourceVersion)'
+  sourceBranch: '$(Build.SourceBranchName)'
+  
+  # Agent VM image name
+  vmImageName: 'ubuntu-18.04'
+
+stages:
+- stage: BuildPublishImages
+  displayName: Build and Publish Images
+  jobs:  
+  - job: inputsrpms
+    displayName: get_input-srpms
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - checkout: self
+    # Go tool installer
+    # Find in cache or download a specific version of Go and add it to the PATH
+    - task: GoTool@0
+      inputs:
+       version: '1.15' 
+       #goPath: # Optional
+       #goBin: # Optional
+    
+    - script: |
+        # Golang and docker are already installed on the agent
+        sudo apt-get update
+        sudo apt -y install make tar wget curl rpm qemu-utils genisoimage pigz parted
+      displayName: Install Remaining Prerequisites
+    
+    - script: |
+        pushd toolkit
+        sudo make go-tools REBUILD_TOOLS=y
+        sudo make input-srpms DOWNLOAD_SRPMS=y
+        popd
+      displayName: Download SRPMS
+
+  - job: isoquickstart
+    displayName: iso-quickstart
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - checkout: self
+    - task: GoTool@0
+      inputs:
+       version: '1.13' 
+       #goPath: # Optional
+       #goBin: # Optional
+    - script: |
+        # Golang and docker are already installed on the agent
+        sudo apt-get update
+        sudo apt -y install make tar wget curl rpm qemu-utils genisoimage pigz
+      displayName: Install Remaining Prerequisites
+
+    - script: |
+        pushd toolkit
+        sudo make go-tools REBUILD_TOOLS=y
+        sudo make input-srpms DOWNLOAD_SRPMS=y
+        popd
+      displayName: Configure the Environment
+
+    - script: |
+        pushd toolkit
+        sudo make iso REBUILD_TOOLS=y REBUILD_PACKAGES=n
+        popd
+      displayName: ISO Quick Start
+
+  - job: vhdxquickstart
+    displayName: vhdx-quickstart
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - checkout: self
+    - task: GoTool@0
+      inputs:
+       version: '1.13' 
+       #goPath: # Optional
+       #goBin: # Optional
+    - script: |
+        # Golang and docker are already installed on the agent
+        sudo apt-get update
+        sudo apt -y install make tar wget curl rpm qemu-utils genisoimage pigz
+      displayName: Install Remaining Prerequisites
+
+    - script: |
+        pushd toolkit
+        sudo make go-tools REBUILD_TOOLS=y
+        sudo make input-srpms DOWNLOAD_SRPMS=y
+        popd
+      displayName: Configure Environment
+
+    - script: |
+        pushd toolkit
+        sudo make image REBUILD_TOOLS=y REBUILD_PACKAGES=n
+        popd
+      displayName: VHDX Quick Start
