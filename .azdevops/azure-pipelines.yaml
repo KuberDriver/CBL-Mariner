@@ -1,7 +1,6 @@
 name: $(build.sourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
 
 trigger:
-  batch: true
   branches:
     include: 
     - master
@@ -30,7 +29,7 @@ variables:
   vmImageName: 'ubuntu-latest'
 
 stages:
-- stage: Build and Publish Images
+- stage: BuildPublishImages
   displayName: Build and Publish Images
   jobs:  
   - job: inputsrpms
