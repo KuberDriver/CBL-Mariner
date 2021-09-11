@@ -1,0 +1,60 @@
+name: $(build.sourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  batch: true
+  branches:
+    include: 
+    - master
+    - staging
+    - dev
+  paths:
+    exclude: 
+    # Exclude README.md from triggering content deployments
+    # Exclude the app folder from triggering content deployments, since it isn't included in the Dockerfile anyway
+    - README.md
+    - app/* 
+
+# no PR builds
+pr: none
+
+resources:
+- repo: self
+
+variables:
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildNumber)'
+  sourceVersion: '$(Build.SourceVersion)'
+  sourceBranch: '$(Build.SourceBranchName)'
+  
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build and Publish Images
+  displayName: Build and Publish Images
+  jobs:  
+  - job: get_input-srpms
+    displayName: get_input-srpms
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - checkout: self
+    # Go tool installer
+    # Find in cache or download a specific version of Go and add it to the PATH
+    - task: GoTool@0
+      inputs:
+       version: '1.15' 
+       #goPath: # Optional
+       #goBin: # Optional
+    - displayName: Install Remaining Prerequisites
+      script: |
+        # Golang and docker are already installed on the agent
+        sudo apt-get update
+        sudo apt -y install make tar wget curl rpm qemu-utils genisoimage pigz parted
+    
+    - displayName: Download SRPMS
+      script: |
+        pushd toolkit
+        sudo make go-tools REBUILD_TOOLS=y
+        sudo make input-srpms DOWNLOAD_SRPMS=y
+        popd
