@@ -6,6 +6,8 @@ trigger:
     - master
     - staging
     - dev
+    - '1.0'
+    - 1.0-dev
   paths:
     exclude: 
     # Exclude README.md from triggering content deployments
