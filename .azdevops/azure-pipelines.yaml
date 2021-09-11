@@ -33,7 +33,7 @@ stages:
 - stage: Build and Publish Images
   displayName: Build and Publish Images
   jobs:  
-  - job: get_input-srpms
+  - job: inputsrpms
     displayName: get_input-srpms
     pool:
       vmImage: $(vmImageName)
