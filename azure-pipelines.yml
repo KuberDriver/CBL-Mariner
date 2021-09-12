@@ -167,3 +167,15 @@ stages:
         cd toolkit
         sudo make image CONFIG_FILE=../imageconfigs/demo_vhd.json
         sudo make iso CONFIG_FILE=../imageconfigs/demo_iso.json
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+      inputs:
+        Contents: |
+          CBL-MarinerDemo/out/images/demo_iso/*.iso
+          CBL-MarinerDemo/out/images/demo_vhd/*.iso
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        artifactType: 'pipeline'
+        artifactName: 'images' 
