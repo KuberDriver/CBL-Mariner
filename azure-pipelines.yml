@@ -180,5 +180,6 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        artifactType: 'pipeline'
-        artifactName: 'images' 
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: 'images'
+        publishLocation: 'pipeline'
