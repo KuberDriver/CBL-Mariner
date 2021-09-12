@@ -169,6 +169,7 @@ stages:
         sudo make iso CONFIG_FILE=../imageconfigs/demo_iso.json
         sudo cp ../out/images/demo_iso/*.iso $(Build.ArtifactStagingDirectory)/
         sudo cp ../out/images/demo_vhd/*.vhd $(Build.ArtifactStagingDirectory)/
+        ls $(Build.ArtifactStagingDirectory)'
     # - task: CopyFiles@2
     #   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
     #   inputs:
