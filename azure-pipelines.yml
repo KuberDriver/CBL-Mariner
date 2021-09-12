@@ -167,13 +167,15 @@ stages:
         cd CBL-MarinerDemo/toolkit
         sudo make image CONFIG_FILE=../imageconfigs/demo_vhd.json
         sudo make iso CONFIG_FILE=../imageconfigs/demo_iso.json
-    - task: CopyFiles@2
-      displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-      inputs:
-        Contents: |
-          $(Build.SourcesDirectory)/CBL-MarinerDemo/out/images/demo_iso/*.iso
-          $(Build.SourcesDirectory)/CBL-MarinerDemo/out/images/demo_vhd/*.iso
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        sudo cp ../out/images/demo_iso/*.iso $(Build.ArtifactStagingDirectory)/
+        sudo cp ../out/images/demo_vhd/*.vhd $(Build.ArtifactStagingDirectory)/
+    # - task: CopyFiles@2
+    #   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+    #   inputs:
+    #     Contents: |
+    #       $(Build.SourcesDirectory)/CBL-MarinerDemo/out/images/demo_iso/*.iso
+    #       $(Build.SourcesDirectory)/CBL-MarinerDemo/out/images/demo_vhd/*.iso
+    #     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
     - task: PublishPipelineArtifact@1
       inputs:
