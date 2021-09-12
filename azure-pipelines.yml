@@ -164,7 +164,7 @@ stages:
     - script: |
         pwd
         ls
-        cd toolkit
+        cd CBL-MarinerDemo/toolkit
         sudo make image CONFIG_FILE=../imageconfigs/demo_vhd.json
         sudo make iso CONFIG_FILE=../imageconfigs/demo_iso.json
     - task: CopyFiles@2
