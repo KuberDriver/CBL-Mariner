@@ -171,8 +171,8 @@ stages:
       displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
       inputs:
         Contents: |
-          CBL-MarinerDemo/out/images/demo_iso/*.iso
-          CBL-MarinerDemo/out/images/demo_vhd/*.iso
+          $(Build.SourcesDirectory)/CBL-MarinerDemo/out/images/demo_iso/*.iso
+          $(Build.SourcesDirectory)/CBL-MarinerDemo/out/images/demo_vhd/*.iso
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
     - task: PublishPipelineArtifact@1
